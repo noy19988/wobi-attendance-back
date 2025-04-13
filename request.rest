@@ -1,0 +1,87 @@
+
+###
+
+GET http://localhost:3060/posts
+
+###
+
+GET http://localhost:3060/posts?owner=NoyAmsalem
+
+###
+
+GET http://localhost:3060/posts/6734b0c818a1cf8344804554
+
+###
+
+
+DELETE http://localhost:3060/posts/6734b0c818a1cf8344804554
+
+### admin login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### create new user by admin
+POST http://localhost:3000/auth/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NDQ0Njg4ODAsImV4cCI6MTc0NDQ3MjQ4MH0.LHZUoKIIpk9GlLCK7n-2h6jkaszaIW0-kdGF7KrtCAg
+
+{
+  "id": "987654321",
+  "username": "employee2",
+  "password": "123456",
+  "firstName": "David2",
+  "lastName": "Gold2",
+  "email": "david.gold2@company.com",
+  "role": "user"
+}
+
+
+
+### login as employee1 (user)
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "username": "employee1",
+  "password": "1234"
+}
+
+
+### Start shift
+POST http://localhost:3000/attendance/start
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk4NzY1NDMyMSIsInVzZXJuYW1lIjoiZW1wbG95ZWUxIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDQ0NzA5NjYsImV4cCI6MTc0NDQ3NDU2Nn0.cZkLkgDP7JIMcqoB07daGNoIjgCg0Ig0mznejtmg47U
+
+
+### End shift
+POST http://localhost:3000/attendance/end
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk4NzY1NDMyMSIsInVzZXJuYW1lIjoiZW1wbG95ZWUxIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDQ0NzA4MDEsImV4cCI6MTc0NDQ3NDQwMX0.duRZ-c-ttSWS5NdYaAsN4vPgSAJvaQZncsd99f7ANK4
+
+
+
+### Edit attendance record by admin
+PUT http://localhost:3000/attendance/edit/c31b13ac-028e-4468-81e8-e8633bd78017
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NDQ0NzE1NTQsImV4cCI6MTc0NDQ3NTE1NH0.GmN4KoG6igvEIwd1GiQ_OXJRhBUKhh-7OrJrf5PGDYY
+
+{
+  "type": "out",
+  "timestamp": "2025-04-12T18:30:00"
+}
+
+
+
+### Admin Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}

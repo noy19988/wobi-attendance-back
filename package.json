@@ -1,0 +1,49 @@
+{
+  "name": "wobi-attendance-back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "dev": "cp .env_dev .env && nodemon ./src/app.ts",
+    "start": "cp .env_dev .env && tsc && cp -r src/data dist/ && node ./dist/app.js",
+    "create-admin": "ts-node scripts/createInitialAdmin.ts"
+
+  },
+  "author": "noyamsalem",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noy19988/wobi-attendance-back.git"
+  },
+  "bugs": {
+    "url": "https://github.com/noy19988/wobi-attendance-back/issues"
+  },
+  "homepage": "https://github.com/noy19988/wobi-attendance-back#readme",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@types/axios": "^0.9.36",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.18.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "eslint": "^9.24.0",
+    "globals": "^16.0.0",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.29.1"
+  }
+}

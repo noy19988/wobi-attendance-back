@@ -1,0 +1,11 @@
+{
+  "admin": {
+    "id": "123456789",
+    "username": "admin",
+    "password": "$2b$10$ztzTG2PbTmOPDfmfLOyg1uHJ3ls3dZlNvzn59BfC.zqijmpxjzcUu",
+    "firstName": "Admin",
+    "lastName": "User",
+    "email": "admin@company.com",
+    "role": "admin"
+  }
+}
