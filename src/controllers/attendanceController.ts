@@ -36,24 +36,27 @@ const getGermanTime = async (): Promise<string> => {
 
 
 
-
-
 export const startShift = async (req: Request, res: Response) => {
   const user = (req as any).user as User;
 
   try {
     const timestamp = await getGermanTime();
+    console.log("Timestamp for the shift:", timestamp);  
+
     const records = loadAttendance();
+    console.log("Loaded attendance records:", records); 
 
     const lastIn = records
       .filter(r => r.user.id === user.id)
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .find(r => r.type === "in");
+    console.log("Last 'in' shift:", lastIn); 
 
     const lastOut = records
       .filter(r => r.user.id === user.id)
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .find(r => r.type === "out");
+    console.log("Last 'out' shift:", lastOut);  
 
     if (lastIn && (!lastOut || new Date(lastIn.timestamp) > new Date(lastOut.timestamp))) {
       return res.status(400).json({ message: "You already have an open shift." });
@@ -68,6 +71,7 @@ export const startShift = async (req: Request, res: Response) => {
 
     records.push(newRecord);
     saveAttendance(records);
+    console.log("Shift started successfully:", newRecord);  
 
     res.status(201).json({ message: "Shift started", record: newRecord });
   } catch (err) {
@@ -85,24 +89,27 @@ export const startShift = async (req: Request, res: Response) => {
 
 
 
-
-
 export const endShift = async (req: Request, res: Response) => {
   const user = (req as any).user as User;
 
   try {
     const timestamp = await getGermanTime();
+    console.log("Timestamp for ending the shift:", timestamp); 
+
     const records = loadAttendance();
+    console.log("Loaded attendance records:", records);  
 
     const lastIn = records
       .filter(r => r.user.id === user.id)
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .find(r => r.type === "in");
+    console.log("Last 'in' shift:", lastIn);  
 
     const lastOut = records
       .filter(r => r.user.id === user.id)
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .find(r => r.type === "out");
+    console.log("Last 'out' shift:", lastOut);  
 
     if (!lastIn || (lastOut && new Date(lastOut.timestamp) > new Date(lastIn.timestamp))) {
       return res.status(400).json({ message: "No open shift found to close." });
@@ -117,6 +124,7 @@ export const endShift = async (req: Request, res: Response) => {
 
     records.push(newRecord);
     saveAttendance(records);
+    console.log("Shift ended successfully:", newRecord);  
 
     res.status(201).json({ message: "Shift ended", record: newRecord });
   } catch (err) {
@@ -124,7 +132,6 @@ export const endShift = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to end shift" });
   }
 };
-
 
 
 
@@ -238,5 +245,52 @@ export const getAllAttendanceRecords = (req: AuthenticatedRequest, res: Response
   } catch (err) {
     console.error("Error fetching attendance records:", err);
     res.status(500).json({ message: "Failed to fetch attendance records" });
+  }
+};
+
+
+export const getCurrentShift = (req: AuthenticatedRequest, res: Response) => {
+  const user = (req as any).user as User;
+
+  try {
+    console.log(`Fetching current shift for user: ${user.username}`);
+
+    const records = loadAttendance(); 
+    console.log("Loaded attendance records:", records);
+
+    if (records.length === 0) {
+      console.log("No attendance records found.");
+      return res.status(200).json({ message: "No attendance records found, please start your shift." });
+    }
+
+    const userShifts = records.filter((r) => r.user.id === user.id);
+    console.log(`User's shifts: ${JSON.stringify(userShifts)}`);
+
+    const currentShift = userShifts
+      .filter((r) => r.type === "in")
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
+    
+    console.log("Current shift found:", currentShift);
+
+    if (currentShift) {
+      const hasOutShift = userShifts.some(
+        (r) => r.type === "out" && new Date(r.timestamp) > new Date(currentShift.timestamp)
+      );
+      console.log("Has out shift after current 'in' shift:", hasOutShift);
+
+      if (!hasOutShift) {
+        return res.status(200).json({
+          message: "Active shift found",
+          shift: currentShift,
+        });
+      }
+    }
+
+    console.log("No active shift found.");
+    return res.status(404).json({ message: "No active shift found." });
+
+  } catch (err) {
+    console.error("Error fetching current shift:", err);
+    return res.status(500).json({ message: "Failed to fetch current shift" });
   }
 };

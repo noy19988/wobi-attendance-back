@@ -1,1 +1,14 @@
-node_modules
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Env files
+.env
+.env.* 
+
+# # Jest / Testing
+# coverage/
+# *.test.ts

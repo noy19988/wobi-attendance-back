@@ -1,1 +1,74 @@
-[]
+[
+  {
+    "id": "91c346c4-ba50-4ca9-8736-fa135532dbff",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user",
+      "iat": 1744630087,
+      "exp": 1744633687
+    },
+    "type": "in",
+    "timestamp": "2025-04-14T13:37:58.0123153"
+  },
+  {
+    "id": "674fb81d-2aca-44e3-be58-787170bdc1a7",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user",
+      "iat": 1744630087,
+      "exp": 1744633687
+    },
+    "type": "out",
+    "timestamp": "2025-04-14T13:38:14.4451004"
+  },
+  {
+    "id": "b09bdd2d-b969-4b19-930f-ced8f02018f1",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user",
+      "iat": 1744630087,
+      "exp": 1744633687
+    },
+    "type": "in",
+    "timestamp": "2025-04-14T13:38:34.3135934"
+  },
+  {
+    "id": "8b6afb40-7d04-4375-b4af-f93f09335c0c",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user",
+      "iat": 1744630756,
+      "exp": 1744634356
+    },
+    "type": "out",
+    "timestamp": "2025-04-14T13:39:34.6596228"
+  },
+  {
+    "id": "80d7ac9f-c4b9-4a7e-bc9a-045035130052",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user",
+      "iat": 1744630756,
+      "exp": 1744634356
+    },
+    "type": "in",
+    "timestamp": "2025-04-14T13:42:31.041062"
+  },
+  {
+    "id": "0b087526-ce24-45c3-8597-aa25569cfb92",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user",
+      "iat": 1744630756,
+      "exp": 1744634356
+    },
+    "type": "out",
+    "timestamp": "2025-04-14T13:42:48.737045"
+  }
+]

@@ -21,22 +21,22 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "username": "admin",
+  "username": "admin2",
   "password": "admin123"
 }
 
 ### create new user by admin
 POST http://localhost:3000/auth/create
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NDQ0Njg4ODAsImV4cCI6MTc0NDQ3MjQ4MH0.LHZUoKIIpk9GlLCK7n-2h6jkaszaIW0-kdGF7KrtCAg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OTAiLCJ1c2VybmFtZSI6ImFkbWluMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NDYyNjEzMSwiZXhwIjoxNzQ0NjI5NzMxfQ.UoTusmxaFBJFU3lZyfbRHrbyD4sXaETEdCGUf8d7BfM
 
 {
-  "id": "987654321",
-  "username": "employee2",
-  "password": "123456",
-  "firstName": "David2",
-  "lastName": "Gold2",
-  "email": "david.gold2@company.com",
+  "id": "9876543211",
+  "username": "employee3",
+  "password": "1234567",
+  "firstName": "David3",
+  "lastName": "Gold3",
+  "email": "david.gold3@company.com",
   "role": "user"
 }
 

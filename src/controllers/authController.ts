@@ -62,7 +62,6 @@ export const createUser = async (req: Request, res: Response) => {
 
 
 
-
 export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
@@ -85,9 +84,8 @@ export const login = async (req: Request, res: Response) => {
     { expiresIn: "1h" }
   );
 
-  return res.json({ token });
+  return res.json({ token, role: user.role }); 
 };
-
 
 
 
@@ -138,4 +136,26 @@ export const updatePassword = async (req: AuthenticatedRequest, res: Response) =
   fs.writeFileSync(usersPath, JSON.stringify(usersData, null, 2));
 
   return res.status(200).json({ message: "Password updated successfully." });
+};
+
+
+
+
+
+export const getCurrentUser = (req: AuthenticatedRequest, res: Response) => {
+  const username = req.user?.username;
+  if (!username) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const usersData = JSON.parse(fs.readFileSync(usersPath, "utf-8")) as Record<string, User>;
+  const user = usersData[username];
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const userWithoutPassword = { ...user, password: undefined };
+
+  return res.status(200).json(userWithoutPassword);
 };

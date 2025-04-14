@@ -1,9 +1,10 @@
 import express from "express";
 import { verifyToken, isAdmin } from "../middleware/authMiddleware";
-import { createUser , logout, login, updatePassword} from "../controllers/authController";
+import { createUser , logout, login, updatePassword, getCurrentUser} from "../controllers/authController";
 
 const router = express.Router();
 
+router.get("/me", verifyToken, getCurrentUser);
 router.put("/update-password", verifyToken, updatePassword);
 router.post("/login", login);
 router.post("/logout", verifyToken, logout);

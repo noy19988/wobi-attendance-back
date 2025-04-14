@@ -8,7 +8,6 @@
     "dev": "cp .env_dev .env && nodemon ./src/app.ts",
     "start": "cp .env_dev .env && tsc && cp -r src/data dist/ && node ./dist/app.js",
     "create-admin": "ts-node scripts/createInitialAdmin.ts"
-
   },
   "author": "noyamsalem",
   "license": "ISC",

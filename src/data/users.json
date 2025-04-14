@@ -1,11 +1,20 @@
 {
   "admin": {
-    "id": "123456789",
-    "username": "admin",
-    "password": "$2b$10$ztzTG2PbTmOPDfmfLOyg1uHJ3ls3dZlNvzn59BfC.zqijmpxjzcUu",
+    "id": "1234567890",
+    "username": "admin2",
+    "password": "$2b$10$TSUhUkHi4zIXA8biRsMW8.LqSoVq6fEI6I3WRU1tDzz4liD3tz3FC",
     "firstName": "Admin",
     "lastName": "User",
     "email": "admin@company.com",
     "role": "admin"
+  },
+  "employee3": {
+    "id": "9876543211",
+    "username": "employee3",
+    "password": "$2b$10$rbdc0EvkjG9NnBMvvsH1cuNpyacEc94eFnA.qVCVd18aM4J2q1AZq",
+    "firstName": "David3",
+    "lastName": "Gold3",
+    "email": "david.gold3@company.com",
+    "role": "user"
   }
 }

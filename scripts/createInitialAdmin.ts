@@ -10,8 +10,8 @@ async function createAdmin() {
   const hashedPassword = await bcrypt.hash("admin123", SALT_ROUNDS);
 
   const admin: User = {
-    id: "123456789",
-    username: "admin",
+    id: "1234567890",
+    username: "admin2",
     password: hashedPassword,
     firstName: "Admin",
     lastName: "User",
