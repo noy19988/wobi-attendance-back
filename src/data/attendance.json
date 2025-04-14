@@ -70,5 +70,77 @@
     },
     "type": "out",
     "timestamp": "2025-04-14T13:42:48.737045"
+  },
+  {
+    "id": "2343ad25-eeb9-40c7-abe0-d83c20981a26",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744631603,
+      "exp": 1744635203
+    },
+    "type": "in",
+    "timestamp": "2025-04-14T13:53:39.6451551"
+  },
+  {
+    "id": "a7b190d4-b4a4-4957-8153-b0bbcb7e7d2d",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744631603,
+      "exp": 1744635203
+    },
+    "type": "out",
+    "timestamp": "2025-04-14T13:54:17.9813806"
+  },
+  {
+    "id": "def4ed26-ae83-430a-a5fa-2b02be29dc44",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744631603,
+      "exp": 1744635203
+    },
+    "type": "in",
+    "timestamp": "2025-04-14T13:55:06.9514765"
+  },
+  {
+    "id": "2b312a5a-ee49-4b58-a0d0-31608e93534f",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744631603,
+      "exp": 1744635203
+    },
+    "type": "out",
+    "timestamp": "2025-04-14T13:55:16.1423417"
+  },
+  {
+    "id": "6f72a5a9-a1b1-4eda-a549-519b19a41ab7",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user",
+      "iat": 1744632451,
+      "exp": 1744636051
+    },
+    "type": "in",
+    "timestamp": "2025-04-14T14:18:03.7000745"
+  },
+  {
+    "id": "a956916b-040b-4989-96f5-779d3e03c4ba",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user",
+      "iat": 1744632451,
+      "exp": 1744636051
+    },
+    "type": "out",
+    "timestamp": "2025-04-14T14:18:20.531235"
   }
 ]

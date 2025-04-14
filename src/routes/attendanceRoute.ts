@@ -7,7 +7,6 @@ const router = express.Router();
 router.get("/all", verifyToken, isAdmin, getAllAttendanceRecords);
 router.get("/summary", verifyToken, getAttendanceSummary);
 router.get("/current", verifyToken, getCurrentShift);
-router.get('/attendance/current', getCurrentShift);
 
 router.post("/start", verifyToken, startShift);
 router.post("/end", verifyToken, endShift);

@@ -249,8 +249,16 @@ export const getAllAttendanceRecords = (req: AuthenticatedRequest, res: Response
 };
 
 
+
+
+
 export const getCurrentShift = (req: AuthenticatedRequest, res: Response) => {
-  const user = (req as any).user as User;
+  const user = req.user; // נניח ש-req.user יכול להיות undefined
+  
+  // אם user לא מוגדר, החזר שגיאה
+  if (!user) {
+    return res.status(400).json({ message: "User not authenticated" });
+  }
 
   try {
     console.log(`Fetching current shift for user: ${user.username}`);
@@ -266,6 +274,7 @@ export const getCurrentShift = (req: AuthenticatedRequest, res: Response) => {
     const userShifts = records.filter((r) => r.user.id === user.id);
     console.log(`User's shifts: ${JSON.stringify(userShifts)}`);
 
+    // Get the most recent 'in' shift
     const currentShift = userShifts
       .filter((r) => r.type === "in")
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
@@ -273,9 +282,11 @@ export const getCurrentShift = (req: AuthenticatedRequest, res: Response) => {
     console.log("Current shift found:", currentShift);
 
     if (currentShift) {
-      const hasOutShift = userShifts.some(
-        (r) => r.type === "out" && new Date(r.timestamp) > new Date(currentShift.timestamp)
-      );
+      // Check if there's no 'out' shift after this 'in' shift
+      const hasOutShift = userShifts
+        .filter((r) => r.type === "out")
+        .some((r) => new Date(r.timestamp) > new Date(currentShift.timestamp));
+
       console.log("Has out shift after current 'in' shift:", hasOutShift);
 
       if (!hasOutShift) {

@@ -141,21 +141,27 @@ export const updatePassword = async (req: AuthenticatedRequest, res: Response) =
 
 
 
-
 export const getCurrentUser = (req: AuthenticatedRequest, res: Response) => {
   const username = req.user?.username;
+  console.log("Current user:", req.user); 
+
   if (!username) {
+    console.log("User not authenticated");
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const usersData = JSON.parse(fs.readFileSync(usersPath, "utf-8")) as Record<string, User>;
-  const user = usersData[username];
+
+  const user = Object.values(usersData).find((user) => user.username === username);
 
   if (!user) {
+    console.log("User not found:", username);
     return res.status(404).json({ message: "User not found" });
   }
 
   const userWithoutPassword = { ...user, password: undefined };
+  console.log("User data returned:", userWithoutPassword); 
 
   return res.status(200).json(userWithoutPassword);
 };
+

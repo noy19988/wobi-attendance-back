@@ -18,6 +18,7 @@ export interface AuthenticatedRequest extends Request {
 export const verifyToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
+  console.log("Token received: ", token);
 
   if (!token) {
     return res.status(401).json({ message: "Access denied. No token provided." });
@@ -26,6 +27,7 @@ export const verifyToken = (req: AuthenticatedRequest, res: Response, next: Next
   try {
     const secret = process.env.ACCESS_TOKEN_SECRET!;
     const decoded = jwt.verify(token, secret) as JwtPayload;
+    console.log(decoded); 
     req.user = decoded;
     next();
   } catch (err) {
