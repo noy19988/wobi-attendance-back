@@ -165,3 +165,35 @@ export const getCurrentUser = (req: AuthenticatedRequest, res: Response) => {
   return res.status(200).json(userWithoutPassword);
 };
 
+
+
+
+
+
+export const getAllUsers = (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const usersData = JSON.parse(fs.readFileSync(usersPath, "utf-8")) as Record<string, User>;
+
+    if (!req.query.userId) {
+      const usersList = Object.values(usersData);
+      const usersWithoutPassword = usersList.map((user) => ({ ...user, password: undefined }));
+      return res.status(200).json({ users: usersWithoutPassword });
+    }
+
+    const userId = req.query.userId as string;
+    const user = Object.values(usersData).find(u => u.id === userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ user: { ...user, password: undefined } });
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};
+
+
+
+

@@ -16,5 +16,41 @@
     "lastName": "Gold3",
     "email": "david.gold3@company.com",
     "role": "user"
+  },
+  "ron@gmail.com": {
+    "id": "123123",
+    "username": "ron@gmail.com",
+    "password": "$2b$10$wg/8L7RiSSFhYLgNvCZ0gecVg0ojxeYnodS8vYoi6XjYwlCy4eSA2",
+    "firstName": "w",
+    "lastName": "asd",
+    "email": "noyamsallem199@gmail.com",
+    "role": "user"
+  },
+  "ron@gmail.com11": {
+    "id": "1231232",
+    "username": "ron@gmail.com11",
+    "password": "$2b$10$wgyCCvUDxVzUxINrCU8V5OJ7z7gu9eacYFYOSAs8o4uPs9kQyTd9m",
+    "firstName": "w",
+    "lastName": "asd",
+    "email": "noyamsallem199@gmail.com",
+    "role": "admin"
+  },
+  "dana": {
+    "id": "12",
+    "username": "dana",
+    "password": "$2b$10$DrQU6.9aeDG3BV.Mel0gkO8ZjwEJYAaHfvL9d875iZovHZ8VXW5z.",
+    "firstName": "dana",
+    "lastName": "banana",
+    "email": "dana@gmail.com",
+    "role": "admin"
+  },
+  "noy@gmail.com": {
+    "id": "207277823",
+    "username": "noy@gmail.com",
+    "password": "$2b$10$Cd05NOzVlpUWZCT/MgKI/uxXeEMDsSZmT7tRf2/UpHbL8I/f/Kafu",
+    "firstName": "noy",
+    "lastName": "amsalem",
+    "email": "noyamsallem199@gmail.com",
+    "role": "user"
   }
 }

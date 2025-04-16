@@ -82,6 +82,24 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "username": "admin",
+  "username": "admin2",
   "password": "admin123"
+}
+
+
+
+
+### shift delete by admin
+DELETE http://localhost:3000/attendance/delete/3b96d606-6cca-47fa-a6f2-81d46e9d2181
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OTAiLCJ1c2VybmFtZSI6ImFkbWluMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NDc0MDQwMSwiZXhwIjoxNzQ0NzQ0MDAxfQ.Fop9aZyRYZOnS2bkKlJlNjsmKXblSblGpV1hCOyMKoM
+
+
+### shift edit by admin
+PUT http://localhost:3000/attendance/edit/3b96d606-6cca-47fa-a6f2-81d46e9d2181
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OTAiLCJ1c2VybmFtZSI6ImFkbWluMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NDc0MDQwMSwiZXhwIjoxNzQ0NzQ0MDAxfQ.Fop9aZyRYZOnS2bkKlJlNjsmKXblSblGpV1hCOyMKoM
+
+{
+  "timestamp": "2025-04-15T09:00:00Z", 
+  "type": "out"
 }

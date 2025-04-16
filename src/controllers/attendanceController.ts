@@ -11,6 +11,15 @@ interface TimeApiResponse {
   dateTime: string;
 }
 
+
+interface CombinedShift extends AttendanceRecord {
+  endTime?: string;
+  hours?: number;
+  date?: string;
+  outId?: string; 
+}
+
+
 const attendancePath = path.join(__dirname, "../data/attendance.json");
 
 const loadAttendance = (): AttendanceRecord[] => {
@@ -71,6 +80,12 @@ export const startShift = async (req: Request, res: Response) => {
 
     records.push(newRecord);
     saveAttendance(records);
+
+
+    const fd = fs.openSync(attendancePath, 'r+');
+    fs.fsyncSync(fd);
+    fs.closeSync(fd);
+    
     console.log("Shift started successfully:", newRecord);  
 
     res.status(201).json({ message: "Shift started", record: newRecord });
@@ -78,6 +93,116 @@ export const startShift = async (req: Request, res: Response) => {
     console.error("Error starting shift:", err);
     res.status(500).json({ message: "Failed to start shift" });
   }
+};
+
+
+
+
+
+
+
+export const getAttendanceSummary = (req: AuthenticatedRequest, res: Response) => {
+  const { from, to, userId } = req.query as {
+    from?: string;
+    to?: string;
+    userId?: string;
+  };
+
+  if (!from || !to) {
+    return res.status(400).json({ message: "From and To dates are required." });
+  }
+
+  console.log(`userId from frontend: ${userId || 'ALL USERS'}`);
+  console.log(`Date range received: from ${from} to ${to}`);
+
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
+
+  toDate.setHours(23, 59, 59, 999); 
+
+  console.log("fromDate:", fromDate);
+  console.log("toDate:", toDate);
+
+  const allRecords = loadAttendance().filter((record) => {
+    const recordDate = new Date(record.timestamp);
+    return recordDate >= fromDate && recordDate <= toDate;
+  });
+
+  console.log("All records in the date range:", allRecords);
+
+  const groupedByUser: Record<string, AttendanceRecord[]> = {};
+  allRecords.forEach((record) => {
+    const uid = record.user.id;
+    if (!groupedByUser[uid]) groupedByUser[uid] = [];
+    groupedByUser[uid].push(record);
+  });
+
+  console.log("👥 Grouped records by user. Total users:", Object.keys(groupedByUser).length);
+
+  const usersToProcess = userId ? [userId] : Object.keys(groupedByUser);
+
+  const allSummaries = usersToProcess.map((uid) => {
+    const records = groupedByUser[uid] || [];
+    records.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    console.log(`📌 Calculating for user ID: ${uid}`);
+    const inStack: AttendanceRecord[] = [];
+    let totalMilliseconds = 0;
+    const updatedRecords: CombinedShift[] = [];
+
+    records.forEach((record) => {
+      const ts = new Date(record.timestamp);
+
+      if (record.type === "in") {
+        inStack.push(record);
+      } else if (record.type === "out" && inStack.length > 0) {
+        const inRecord = inStack.shift()!;
+        const inTime = new Date(inRecord.timestamp);
+        const outTime = ts;
+        const duration = outTime.getTime() - inTime.getTime();
+        totalMilliseconds += duration;
+
+        updatedRecords.push({
+          id: inRecord.id,
+          user: inRecord.user,
+          timestamp: inRecord.timestamp,
+          type: inRecord.type,
+          endTime: outTime.toISOString(),
+          hours: duration / (1000 * 60 * 60),
+          date: new Date(inTime).toLocaleDateString(),
+          outId: record.id, 
+        });
+        
+      }
+    });
+
+    if (inStack.length > 0) {
+      console.warn(`Found ${inStack.length} unmatched IN records (without OUT) for user ${uid}`);
+    }
+
+    const totalHours = Math.floor(totalMilliseconds / (1000 * 60 * 60));
+    const totalMinutes = Math.floor((totalMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+
+    console.log(`Total shifts sent for ${uid}: ${updatedRecords.length}\n`);
+
+    return {
+      userId: uid,
+      from,
+      to,
+      totalHours,
+      totalMinutes,
+      records: updatedRecords,
+    };
+  });
+
+  const result = userId
+    ? allSummaries.find((summary) => summary.userId === userId)
+    : allSummaries;
+
+  console.log("Summary sent to frontend:");
+  console.log(JSON.stringify(result, null, 2));
+
+  res.status(200).json(result);
 };
 
 
@@ -140,122 +265,9 @@ export const endShift = async (req: Request, res: Response) => {
 
 
 
-export const editRecord = (req: Request, res: Response) => {
-  const recordId = req.params.id;
-  const { type, timestamp } = req.body;
-
-  if (!type || !timestamp) {
-    return res.status(400).json({ message: "Missing fields: type and timestamp are required" });
-  }
-
-  const records = loadAttendance();
-  const recordIndex = records.findIndex((r) => r.id === recordId);
-
-  if (recordIndex === -1) {
-    return res.status(404).json({ message: "Record not found" });
-  }
-
-  records[recordIndex].type = type;
-  records[recordIndex].timestamp = timestamp;
-
-  saveAttendance(records);
-
-  res.status(200).json({
-    message: "Record updated successfully",
-    record: records[recordIndex],
-  });
-};
-
-
-
-
-
-
-
-
-
-
-
-
-export const getAttendanceSummary = (req: AuthenticatedRequest, res: Response) => {
-  const { from, to, userId } = req.query as {
-    from?: string;
-    to?: string;
-    userId?: string;
-  };
-
-  const isAdmin = req.user?.role === "admin";
-  const currentUserId = req.user?.id;
-
-  if (!from || !to) {
-    return res.status(400).json({ message: "From and To dates are required." });
-  }
-
-  const fromDate = new Date(from);
-  const toDate = new Date(to);
-
-  const targetUserId = isAdmin && userId ? userId : currentUserId;
-
-  const records = loadAttendance().filter((record) => {
-    return (
-      record.user.id === targetUserId &&
-      new Date(record.timestamp) >= fromDate &&
-      new Date(record.timestamp) <= toDate
-    );
-  });
-
-
-  let totalMilliseconds = 0;
-  let inTime: Date | null = null;
-
-  for (const record of records.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())) {
-    const ts = new Date(record.timestamp);
-    if (record.type === "in") {
-      inTime = ts;
-    } else if (record.type === "out" && inTime) {
-      totalMilliseconds += ts.getTime() - inTime.getTime();
-      inTime = null;
-    }
-  }
-
-  const totalHours = Math.floor(totalMilliseconds / (1000 * 60 * 60));
-  const totalMinutes = Math.floor((totalMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
-
-  res.status(200).json({
-    userId: targetUserId,
-    from,
-    to,
-    totalHours,
-    totalMinutes,
-    records,
-  });
-};
-
-
-
-
-export const getAllAttendanceRecords = (req: AuthenticatedRequest, res: Response) => {
-  if (req.user?.role !== "admin") {
-    return res.status(403).json({ message: "Access denied. Admins only." });
-  }
-
-  try {
-    const records = loadAttendance();
-    res.status(200).json(records);
-  } catch (err) {
-    console.error("Error fetching attendance records:", err);
-    res.status(500).json({ message: "Failed to fetch attendance records" });
-  }
-};
-
-
-
-
-
 export const getCurrentShift = (req: AuthenticatedRequest, res: Response) => {
-  const user = req.user; // נניח ש-req.user יכול להיות undefined
+  const user = req.user; 
   
-  // אם user לא מוגדר, החזר שגיאה
   if (!user) {
     return res.status(400).json({ message: "User not authenticated" });
   }
@@ -274,7 +286,7 @@ export const getCurrentShift = (req: AuthenticatedRequest, res: Response) => {
     const userShifts = records.filter((r) => r.user.id === user.id);
     console.log(`User's shifts: ${JSON.stringify(userShifts)}`);
 
-    // Get the most recent 'in' shift
+
     const currentShift = userShifts
       .filter((r) => r.type === "in")
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
@@ -282,26 +294,87 @@ export const getCurrentShift = (req: AuthenticatedRequest, res: Response) => {
     console.log("Current shift found:", currentShift);
 
     if (currentShift) {
-      // Check if there's no 'out' shift after this 'in' shift
+
       const hasOutShift = userShifts
         .filter((r) => r.type === "out")
         .some((r) => new Date(r.timestamp) > new Date(currentShift.timestamp));
 
       console.log("Has out shift after current 'in' shift:", hasOutShift);
 
-      if (!hasOutShift) {
+      if (currentShift && !hasOutShift) {
         return res.status(200).json({
           message: "Active shift found",
           shift: currentShift,
         });
       }
-    }
-
-    console.log("No active shift found.");
-    return res.status(404).json({ message: "No active shift found." });
+      
+      return res.status(200).json({
+        message: "No active shift found.",
+        lastShift: currentShift || null,
+      });
+    }      
 
   } catch (err) {
     console.error("Error fetching current shift:", err);
     return res.status(500).json({ message: "Failed to fetch current shift" });
   }
+};
+
+
+
+
+export const deleteShiftRecord = (req: Request, res: Response) => {
+  const recordId = req.params.id; 
+
+  const records = loadAttendance();  
+  const recordIndex = records.findIndex((r) => r.id === recordId); 
+
+  if (recordIndex === -1) {
+    return res.status(404).json({ message: "Record not found" });
+  }
+
+  const recordToDelete = records[recordIndex];
+
+  const remainingRecords = records.filter(r => {
+
+    return r.user.id !== recordToDelete.user.id || (r.type !== recordToDelete.type);
+  });
+
+  saveAttendance(remainingRecords);  
+
+  return res.status(200).json({
+    message: "Shift deleted successfully",
+    record: recordToDelete,
+  });
+};
+
+
+
+
+
+
+export const editShiftRecord = (req: Request, res: Response) => {
+  const recordId = req.params.id; 
+  const { timestamp, type } = req.body;  
+
+  if (!timestamp || !type) {
+    return res.status(400).json({ message: "Missing fields: type and timestamp are required" });
+  }
+
+  const records = loadAttendance();  
+  const recordIndex = records.findIndex((r) => r.id === recordId); 
+
+  if (recordIndex === -1) {
+    return res.status(404).json({ message: "Record not found" });
+  }
+
+  records[recordIndex].timestamp = timestamp;
+  records[recordIndex].type = type;
+
+  saveAttendance(records);  
+
+  return res.status(200).json({
+    message: "Record updated successfully",
+    record: records[recordIndex],
+  });
 };
