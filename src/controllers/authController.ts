@@ -6,6 +6,8 @@ import path from "path";
 import bcrypt from "bcrypt";
 import { User, Role } from "../models/userModel";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
+import { AttendanceRecord } from "../models/attendanceModel";
+
 
 dotenv.config();
 
@@ -102,9 +104,6 @@ export const logout = (req: Request, res: Response) => {
 
 
 
-
-
-
 export const updatePassword = async (req: AuthenticatedRequest, res: Response) => {
   const { currentPassword, newPassword } = req.body;
 
@@ -176,24 +175,82 @@ export const getAllUsers = (req: AuthenticatedRequest, res: Response) => {
 
     if (!req.query.userId) {
       const usersList = Object.values(usersData);
-      const usersWithoutPassword = usersList.map((user) => ({ ...user, password: undefined }));
-      return res.status(200).json({ users: usersWithoutPassword });
+
+      const usersFormatted = usersList.map((user) => ({
+        id: user.id,
+        username: user.username,
+        fullName: `${user.firstName} ${user.lastName}`,
+        role: user.role,
+        email: user.email,
+      }));
+
+      return res.status(200).json({ users: usersFormatted });
     }
 
     const userId = req.query.userId as string;
-    const user = Object.values(usersData).find(u => u.id === userId);
+    const user = Object.values(usersData).find((u) => u.id === userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json({ user: { ...user, password: undefined } });
+    return res.status(200).json({
+      user: {
+        id: user.id,
+        username: user.username,
+        fullName: `${user.firstName} ${user.lastName}`,
+        role: user.role,
+        email: user.email,
+      },
+    });
   } catch (err) {
     console.error("Error fetching users:", err);
-    res.status(500).json({ message: "Failed to fetch users" });
+    return res.status(500).json({ message: "Failed to fetch users" });
   }
 };
 
 
 
 
+
+
+
+
+export const deleteUser = (req: AuthenticatedRequest, res: Response) => {
+  const userId = req.params.id;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    const usersData = JSON.parse(fs.readFileSync(usersPath, "utf-8")) as Record<string, User>;
+
+    const username = Object.keys(usersData).find(key => usersData[key].id === userId);
+
+    if (!username) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const deletedUser = usersData[username];
+    delete usersData[username];
+    fs.writeFileSync(usersPath, JSON.stringify(usersData, null, 2));
+
+    const attendancePath = path.join(__dirname, "../data/attendance.json");
+    const attendanceData = fs.existsSync(attendancePath)
+      ? JSON.parse(fs.readFileSync(attendancePath, "utf-8"))
+      : [];
+
+    const updatedAttendance = attendanceData.filter((record: AttendanceRecord) => record.user.id !== userId);
+    fs.writeFileSync(attendancePath, JSON.stringify(updatedAttendance, null, 2));
+
+    return res.status(200).json({
+      message: "User and all related shift records deleted successfully.",
+      deletedUser: { ...deletedUser, password: undefined },
+    });
+
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    return res.status(500).json({ message: "Failed to delete user" });
+  }
+};

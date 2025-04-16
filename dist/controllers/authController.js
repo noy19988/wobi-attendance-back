@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePassword = exports.logout = exports.login = exports.createUser = void 0;
+exports.getAllUsers = exports.getCurrentUser = exports.updatePassword = exports.logout = exports.login = exports.createUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const fs_1 = __importDefault(require("fs"));
@@ -52,7 +52,7 @@ const login = async (req, res) => {
         return res.status(401).json({ message: "Invalid username or password" });
     }
     const token = jsonwebtoken_1.default.sign({ id: user.id, username: user.username, role: user.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
-    return res.json({ token });
+    return res.json({ token, role: user.role });
 };
 exports.login = login;
 const logout = (req, res) => {
@@ -84,3 +84,42 @@ const updatePassword = async (req, res) => {
     return res.status(200).json({ message: "Password updated successfully." });
 };
 exports.updatePassword = updatePassword;
+const getCurrentUser = (req, res) => {
+    const username = req.user?.username;
+    console.log("Current user:", req.user);
+    if (!username) {
+        console.log("User not authenticated");
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const usersData = JSON.parse(fs_1.default.readFileSync(usersPath, "utf-8"));
+    const user = Object.values(usersData).find((user) => user.username === username);
+    if (!user) {
+        console.log("User not found:", username);
+        return res.status(404).json({ message: "User not found" });
+    }
+    const userWithoutPassword = { ...user, password: undefined };
+    console.log("User data returned:", userWithoutPassword);
+    return res.status(200).json(userWithoutPassword);
+};
+exports.getCurrentUser = getCurrentUser;
+const getAllUsers = (req, res) => {
+    try {
+        const usersData = JSON.parse(fs_1.default.readFileSync(usersPath, "utf-8"));
+        if (!req.query.userId) {
+            const usersList = Object.values(usersData);
+            const usersWithoutPassword = usersList.map((user) => ({ ...user, password: undefined }));
+            return res.status(200).json({ users: usersWithoutPassword });
+        }
+        const userId = req.query.userId;
+        const user = Object.values(usersData).find(u => u.id === userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.status(200).json({ user: { ...user, password: undefined } });
+    }
+    catch (err) {
+        console.error("Error fetching users:", err);
+        res.status(500).json({ message: "Failed to fetch users" });
+    }
+};
+exports.getAllUsers = getAllUsers;

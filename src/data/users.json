@@ -52,5 +52,14 @@
     "lastName": "amsalem",
     "email": "noyamsallem199@gmail.com",
     "role": "user"
+  },
+  "22@gmail.com": {
+    "id": "weq",
+    "username": "22@gmail.com",
+    "password": "$2b$10$wbhRmDH4/ZB4bx.caYFPYumPubVRfGjhAFOFAwqne./4mq2FkZRgG",
+    "firstName": "asdasd",
+    "lastName": "das",
+    "email": "sss@gmail.com",
+    "role": "user"
   }
 }

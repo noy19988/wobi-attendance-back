@@ -1,1 +1,298 @@
-[]
+[
+  {
+    "id": "1",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin"
+    },
+    "type": "in",
+    "timestamp": "2025-04-10T11:00:00"
+  },
+  {
+    "id": "2",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin"
+    },
+    "type": "out",
+    "timestamp": "2025-04-10T22:00:00"
+  },
+  {
+    "id": "3",
+    "user": {
+      "id": "123123",
+      "username": "ron@gmail.com",
+      "role": "user"
+    },
+    "type": "in",
+    "timestamp": "2025-04-11T09:00:00"
+  },
+  {
+    "id": "4",
+    "user": {
+      "id": "123123",
+      "username": "ron@gmail.com",
+      "role": "user"
+    },
+    "type": "out",
+    "timestamp": "2025-04-11T17:00:00"
+  },
+  {
+    "id": "5",
+    "user": {
+      "id": "1231232",
+      "username": "ron@gmail.com11",
+      "role": "admin"
+    },
+    "type": "in",
+    "timestamp": "2025-04-12T13:30:00"
+  },
+  {
+    "id": "6",
+    "user": {
+      "id": "1231232",
+      "username": "ron@gmail.com11",
+      "role": "admin"
+    },
+    "type": "out",
+    "timestamp": "2025-04-12T22:30:00"
+  },
+  {
+    "id": "7",
+    "user": {
+      "id": "12",
+      "username": "dana",
+      "role": "admin"
+    },
+    "type": "in",
+    "timestamp": "2025-04-11T09:00:00"
+  },
+  {
+    "id": "8",
+    "user": {
+      "id": "12",
+      "username": "dana",
+      "role": "admin"
+    },
+    "type": "out",
+    "timestamp": "2025-04-16T16:00:00"
+  },
+  {
+    "id": "9",
+    "user": {
+      "id": "207277823",
+      "username": "noy@gmail.com",
+      "role": "user"
+    },
+    "type": "in",
+    "timestamp": "2025-04-14T18:00:00"
+  },
+  {
+    "id": "10",
+    "user": {
+      "id": "207277823",
+      "username": "noy@gmail.com",
+      "role": "user"
+    },
+    "type": "out",
+    "timestamp": "2025-04-14T01:00:00"
+  },
+  {
+    "id": "13",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user"
+    },
+    "type": "in",
+    "timestamp": "2025-04-10T09:00:00"
+  },
+  {
+    "id": "14",
+    "user": {
+      "id": "9876543211",
+      "username": "employee3",
+      "role": "user"
+    },
+    "type": "out",
+    "timestamp": "2025-04-10T00:00:00"
+  },
+  {
+    "id": "15",
+    "user": {
+      "id": "207277823",
+      "username": "noy@gmail.com",
+      "role": "user"
+    },
+    "type": "in",
+    "timestamp": "2025-04-17T07:45:00"
+  },
+  {
+    "id": "16",
+    "user": {
+      "id": "207277823",
+      "username": "noy@gmail.com",
+      "role": "user"
+    },
+    "type": "out",
+    "timestamp": "2025-04-17T17:45:00"
+  },
+  {
+    "id": "3b08ea0e-5c7c-4978-8222-ca6cf3fc0b10",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744796071,
+      "exp": 1744799671
+    },
+    "type": "in",
+    "timestamp": "2025-04-16T11:36:00"
+  },
+  {
+    "id": "072caa45-84b7-4e20-9558-115ba5e3779b",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744796071,
+      "exp": 1744799671
+    },
+    "type": "out",
+    "timestamp": "2025-04-16T12:36:00"
+  },
+  {
+    "id": "239a1c59-4368-4e04-8b5b-93599749e5b5",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744796071,
+      "exp": 1744799671
+    },
+    "type": "out",
+    "timestamp": "2025-04-16T12:36:00"
+  },
+  {
+    "id": "b87641b7-05ac-46c1-9ec5-89baac13e74b",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744796071,
+      "exp": 1744799671
+    },
+    "type": "in",
+    "timestamp": "2025-04-16T11:48:00"
+  },
+  {
+    "id": "0467463d-7e53-4cdf-8f67-43a95f1336e8",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744796071,
+      "exp": 1744799671
+    },
+    "type": "out",
+    "timestamp": "2025-04-16T15:54:00"
+  },
+  {
+    "id": "12b26d6f-e6d2-44fc-9aca-54af320a86c9",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744796071,
+      "exp": 1744799671
+    },
+    "type": "out",
+    "timestamp": "2025-04-16T11:55:00"
+  },
+  {
+    "id": "7686e8f2-b948-4c2a-8034-74c36a5e973c",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744796071,
+      "exp": 1744799671
+    },
+    "type": "in",
+    "timestamp": "2025-04-16T11:55:00"
+  },
+  {
+    "id": "c12d449b-caa6-4639-9077-7cf3aa04c1ca",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744796071,
+      "exp": 1744799671
+    },
+    "type": "in",
+    "timestamp": "2025-04-16T12:01:00"
+  },
+  {
+    "id": "66f1720b-2d03-4e75-8904-20ebee38dbfa",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744797790,
+      "exp": 1744801390
+    },
+    "type": "in",
+    "timestamp": "2025-04-16T12:05:35.8432822"
+  },
+  {
+    "id": "62ff64f4-e4a3-4731-ace6-375a04a3bb2d",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744797790,
+      "exp": 1744801390
+    },
+    "type": "in",
+    "timestamp": "2025-04-16T12:06:55.5904156"
+  },
+  {
+    "id": "fb7c558e-01a1-40fd-b433-af2f3c2e825d",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744797790,
+      "exp": 1744801390
+    },
+    "type": "in",
+    "timestamp": "2025-04-16T12:07:45.9922052"
+  },
+  {
+    "id": "85ff7629-6b89-4e80-afbc-c9bdc98db32b",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744797790,
+      "exp": 1744801390
+    },
+    "type": "in",
+    "timestamp": "2025-04-16T12:08:08.3139056"
+  },
+  {
+    "id": "06bf748e-1c83-43e2-952a-db2edd424104",
+    "user": {
+      "id": "1234567890",
+      "username": "admin2",
+      "role": "admin",
+      "iat": 1744798142,
+      "exp": 1744801742
+    },
+    "type": "in",
+    "timestamp": "2025-04-16T12:09:06.5648813"
+  }
+]

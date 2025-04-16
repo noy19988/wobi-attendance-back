@@ -10,12 +10,14 @@ dotenv_1.default.config();
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
+    console.log("Token received: ", token);
     if (!token) {
         return res.status(401).json({ message: "Access denied. No token provided." });
     }
     try {
         const secret = process.env.ACCESS_TOKEN_SECRET;
         const decoded = jsonwebtoken_1.default.verify(token, secret);
+        console.log(decoded);
         req.user = decoded;
         next();
     }

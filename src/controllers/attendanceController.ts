@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
+
 interface TimeApiResponse {
   dateTime: string;
 }
@@ -21,6 +22,7 @@ interface CombinedShift extends AttendanceRecord {
 
 
 const attendancePath = path.join(__dirname, "../data/attendance.json");
+const pendingUserWrites = new Set<string>();
 
 const loadAttendance = (): AttendanceRecord[] => {
   if (!fs.existsSync(attendancePath)) return [];
@@ -41,33 +43,36 @@ const getGermanTime = async (): Promise<string> => {
 
 
 
-
-
-
-
 export const startShift = async (req: Request, res: Response) => {
   const user = (req as any).user as User;
 
+  if (pendingUserWrites.has(user.id)) {
+    return res.status(409).json({ message: "Shift action already in progress. Please wait..." });
+  }
+
+  pendingUserWrites.add(user.id);
   try {
     const timestamp = await getGermanTime();
-    console.log("Timestamp for the shift:", timestamp);  
-
     const records = loadAttendance();
-    console.log("Loaded attendance records:", records); 
 
-    const lastIn = records
+    const userRecords = records
       .filter(r => r.user.id === user.id)
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .find(r => r.type === "in");
-    console.log("Last 'in' shift:", lastIn); 
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-    const lastOut = records
-      .filter(r => r.user.id === user.id)
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .find(r => r.type === "out");
-    console.log("Last 'out' shift:", lastOut);  
+    let openShiftExists = false;
+    let lastIn: AttendanceRecord | undefined;
 
-    if (lastIn && (!lastOut || new Date(lastIn.timestamp) > new Date(lastOut.timestamp))) {
+    for (const record of userRecords) {
+      if (record.type === "in") {
+        lastIn = record;
+        openShiftExists = true;
+      } else if (record.type === "out" && lastIn && new Date(record.timestamp) > new Date(lastIn.timestamp)) {
+        openShiftExists = false;
+        lastIn = undefined;
+      }
+    }
+
+    if (openShiftExists) {
       return res.status(400).json({ message: "You already have an open shift." });
     }
 
@@ -81,22 +86,18 @@ export const startShift = async (req: Request, res: Response) => {
     records.push(newRecord);
     saveAttendance(records);
 
-
     const fd = fs.openSync(attendancePath, 'r+');
     fs.fsyncSync(fd);
     fs.closeSync(fd);
-    
-    console.log("Shift started successfully:", newRecord);  
 
     res.status(201).json({ message: "Shift started", record: newRecord });
   } catch (err) {
     console.error("Error starting shift:", err);
     res.status(500).json({ message: "Failed to start shift" });
+  } finally {
+    pendingUserWrites.delete(user.id);
   }
 };
-
-
-
 
 
 
@@ -212,29 +213,28 @@ export const getAttendanceSummary = (req: AuthenticatedRequest, res: Response) =
 
 
 
-
-
 export const endShift = async (req: Request, res: Response) => {
   const user = (req as any).user as User;
 
+  if (pendingUserWrites.has(user.id)) {
+    return res.status(409).json({ message: "Shift action already in progress. Please wait..." });
+  }
+
+  pendingUserWrites.add(user.id);
   try {
     const timestamp = await getGermanTime();
-    console.log("Timestamp for ending the shift:", timestamp); 
 
     const records = loadAttendance();
-    console.log("Loaded attendance records:", records);  
 
     const lastIn = records
       .filter(r => r.user.id === user.id)
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .find(r => r.type === "in");
-    console.log("Last 'in' shift:", lastIn);  
 
     const lastOut = records
       .filter(r => r.user.id === user.id)
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .find(r => r.type === "out");
-    console.log("Last 'out' shift:", lastOut);  
 
     if (!lastIn || (lastOut && new Date(lastOut.timestamp) > new Date(lastIn.timestamp))) {
       return res.status(400).json({ message: "No open shift found to close." });
@@ -249,15 +249,15 @@ export const endShift = async (req: Request, res: Response) => {
 
     records.push(newRecord);
     saveAttendance(records);
-    console.log("Shift ended successfully:", newRecord);  
-
+    
     res.status(201).json({ message: "Shift ended", record: newRecord });
   } catch (err) {
     console.error("Error ending shift:", err);
     res.status(500).json({ message: "Failed to end shift" });
+  } finally {
+    pendingUserWrites.delete(user.id);
   }
 };
-
 
 
 
@@ -335,10 +335,7 @@ export const deleteShiftRecord = (req: Request, res: Response) => {
 
   const recordToDelete = records[recordIndex];
 
-  const remainingRecords = records.filter(r => {
-
-    return r.user.id !== recordToDelete.user.id || (r.type !== recordToDelete.type);
-  });
+  const remainingRecords = records.filter(r => r.id !== recordToDelete.id);
 
   saveAttendance(remainingRecords);  
 
