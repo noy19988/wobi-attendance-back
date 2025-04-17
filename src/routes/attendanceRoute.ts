@@ -5,12 +5,13 @@ import { startShift, endShift, getAttendanceSummary, getCurrentShift,editShiftRe
 const router = express.Router();
 
 router.get("/all", verifyToken, isAdmin);
+router.put("/edit/:id", verifyToken, isAdmin);
+
 router.get("/summary", verifyToken, getAttendanceSummary);
 router.get("/current", verifyToken, getCurrentShift);
 
 router.post("/start", verifyToken, startShift);
 router.post("/end", verifyToken, endShift);
-router.put("/edit/:id", verifyToken, isAdmin);
 
 router.put("/edit/:id", verifyToken, isAdmin, editShiftRecord);
 

@@ -21,6 +21,15 @@ interface CombinedShift extends AttendanceRecord {
 }
 
 
+const cleanUserForStorage = (user: any): Partial<User> => {
+  return {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+  };
+};
+
+
 const attendancePath = path.join(__dirname, "../data/attendance.json");
 const pendingUserWrites = new Set<string>();
 
@@ -76,19 +85,17 @@ export const startShift = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "You already have an open shift." });
     }
 
+    const cleanedUser = cleanUserForStorage(user);
+
     const newRecord: AttendanceRecord = {
       id: uuidv4(),
-      user,
+      user: cleanedUser as User,
       type: "in",
       timestamp,
     };
 
     records.push(newRecord);
     saveAttendance(records);
-
-    const fd = fs.openSync(attendancePath, 'r+');
-    fs.fsyncSync(fd);
-    fs.closeSync(fd);
 
     res.status(201).json({ message: "Shift started", record: newRecord });
   } catch (err) {
@@ -113,8 +120,6 @@ export const getAttendanceSummary = (req: AuthenticatedRequest, res: Response) =
     return res.status(400).json({ message: "From and To dates are required." });
   }
 
-  console.log(`userId from frontend: ${userId || 'ALL USERS'}`);
-  console.log(`Date range received: from ${from} to ${to}`);
 
   const fromDate = new Date(from);
   const toDate = new Date(to);
@@ -129,7 +134,6 @@ export const getAttendanceSummary = (req: AuthenticatedRequest, res: Response) =
     return recordDate >= fromDate && recordDate <= toDate;
   });
 
-  console.log("All records in the date range:", allRecords);
 
   const groupedByUser: Record<string, AttendanceRecord[]> = {};
   allRecords.forEach((record) => {
@@ -138,7 +142,7 @@ export const getAttendanceSummary = (req: AuthenticatedRequest, res: Response) =
     groupedByUser[uid].push(record);
   });
 
-  console.log("👥 Grouped records by user. Total users:", Object.keys(groupedByUser).length);
+  console.log("Grouped records by user. Total users:", Object.keys(groupedByUser).length);
 
   const usersToProcess = userId ? [userId] : Object.keys(groupedByUser);
 
@@ -146,9 +150,8 @@ export const getAttendanceSummary = (req: AuthenticatedRequest, res: Response) =
     const records = groupedByUser[uid] || [];
     records.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-    console.log(`📌 Calculating for user ID: ${uid}`);
     const inStack: AttendanceRecord[] = [];
-    let totalMilliseconds = 0;
+    let totalTime = 0;
     const updatedRecords: CombinedShift[] = [];
 
     records.forEach((record) => {
@@ -161,7 +164,7 @@ export const getAttendanceSummary = (req: AuthenticatedRequest, res: Response) =
         const inTime = new Date(inRecord.timestamp);
         const outTime = ts;
         const duration = outTime.getTime() - inTime.getTime();
-        totalMilliseconds += duration;
+        totalTime += duration;
 
         updatedRecords.push({
           id: inRecord.id,
@@ -181,8 +184,8 @@ export const getAttendanceSummary = (req: AuthenticatedRequest, res: Response) =
       console.warn(`Found ${inStack.length} unmatched IN records (without OUT) for user ${uid}`);
     }
 
-    const totalHours = Math.floor(totalMilliseconds / (1000 * 60 * 60));
-    const totalMinutes = Math.floor((totalMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+    const totalHours = Math.floor(totalTime / (1000 * 60 * 60));
+    const totalMinutes = Math.floor((totalTime % (1000 * 60 * 60)) / (1000 * 60));
 
     console.log(`Total shifts sent for ${uid}: ${updatedRecords.length}\n`);
 
@@ -240,9 +243,12 @@ export const endShift = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "No open shift found to close." });
     }
 
+    const cleanedUser = cleanUserForStorage(user);
+
+
     const newRecord: AttendanceRecord = {
       id: uuidv4(),
-      user,
+      user: cleanedUser as User,
       type: "out",
       timestamp,
     };
@@ -273,25 +279,20 @@ export const getCurrentShift = (req: AuthenticatedRequest, res: Response) => {
   }
 
   try {
-    console.log(`Fetching current shift for user: ${user.username}`);
 
     const records = loadAttendance(); 
-    console.log("Loaded attendance records:", records);
 
     if (records.length === 0) {
-      console.log("No attendance records found.");
       return res.status(200).json({ message: "No attendance records found, please start your shift." });
     }
 
     const userShifts = records.filter((r) => r.user.id === user.id);
-    console.log(`User's shifts: ${JSON.stringify(userShifts)}`);
 
 
     const currentShift = userShifts
       .filter((r) => r.type === "in")
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
     
-    console.log("Current shift found:", currentShift);
 
     if (currentShift) {
 
@@ -327,7 +328,7 @@ export const deleteShiftRecord = (req: Request, res: Response) => {
   const recordId = req.params.id; 
 
   const records = loadAttendance();  
-  const recordIndex = records.findIndex((r) => r.id === recordId); 
+  const recordIndex = records.findIndex((r) => r.id === recordId);
 
   if (recordIndex === -1) {
     return res.status(404).json({ message: "Record not found" });
